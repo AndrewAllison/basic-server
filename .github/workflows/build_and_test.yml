@@ -19,7 +19,7 @@ jobs:
         run: npm ci
       - uses: oke-py/npm-audit-action@v2
         with:
-          audit_level: moderate
+          audit_level: high
           github_token: ${{ secrets.GITHUB_TOKEN }}
           issue_assignees: oke-py
           issue_labels: vulnerability,test
@@ -41,5 +41,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - run: npm ci
     - run: npm run build --if-present
     - run: npm run test:unit
