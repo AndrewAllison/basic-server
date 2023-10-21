@@ -1,5 +1,18 @@
 version: '3.7'
 services:
+  basic-server-docker:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/usr/app
+    container_name: basic-server
+    expose:
+      - "6006"
+    ports:
+      - "6006:6006"
   db:
     image: "postgres"
     ports:
