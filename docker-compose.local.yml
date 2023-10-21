@@ -1,0 +1,17 @@
+version: '3'
+services:
+  basic-server-docker:
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL="12345"
+      - PORT=6060
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/usr/app
+    container_name: basic-server
+    expose:
+      - "6060"
+    ports:
+      - "6060:6060"
