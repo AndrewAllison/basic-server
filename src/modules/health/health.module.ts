@@ -6,5 +6,6 @@ import { PrismaModule } from '../db/prisma/prisma.module';
 @Module({
   imports: [PrismaModule, TerminusModule],
   controllers: [HealthController],
+  providers: [],
 })
 export class HealthModule {}

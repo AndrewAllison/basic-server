@@ -16,6 +16,7 @@
     "test": "jest",
     "test:cucumber": "cucumber-js",
     "test:unit": "jest --selectProjects unit",
+    "test:unit:coverage": "jest --selectProjects unit --coverage",
     "test:integration": "jest --selectProjects integration",
     "test:e2e": "jest --selectProjects e2e",
     "test:load": "artillery run __tests__/load/basic-load-test.yml",

@@ -6,6 +6,7 @@ import {
   PrismaHealthIndicator,
 } from '@nestjs/terminus';
 import { PrismaService } from '../db/prisma/prisma.service';
+import { ApiTags } from '@nestjs/swagger';
 
 // https://github.com/nestjs/terminus/tree/master/sample - for more info and samples go here
 @Controller('health')
@@ -17,6 +18,7 @@ export class HealthController {
     private prisma: PrismaService,
   ) {}
 
+  @ApiTags('Server')
   @Get()
   @HealthCheck()
   check() {

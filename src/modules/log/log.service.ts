@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { Injectable, Scope } from '@nestjs/common';
 import { Params, PinoLogger } from 'nestjs-pino';
 import { CorrelationService } from './correlation/correlation.service';
