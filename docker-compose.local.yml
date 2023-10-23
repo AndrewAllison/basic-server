@@ -13,17 +13,21 @@ services:
       - "6006"
     ports:
       - "6006:6006"
-  db:
-    image: "postgres"
-    ports:
-      - "5499:5432"
+  mysql-db:
+    image: mysql:8.0.33
+    restart: always
     env_file:
-      - .env.postgres # configure postgres
+      - .env.mysql
+    ports:
+      - '3307:3306'
+    expose:
+      - '3307'
     volumes:
-      - basic-server-data:/var/lib/postgresql/data/ # persist data even if container shuts down
+      - basic-server-db-data:/var/lib/mysql
     networks:
       - basic-server
   seq:
+    image: 'datalust/seq:latest'
     environment:
       - ACCEPT_EULA=Y
     volumes:
@@ -31,7 +35,6 @@ services:
     ports:
       - '8080:80' # exposes ui ports
       - '5341:5341' # handles ingestion http end-point
-    image: 'datalust/seq:latest'
 volumes:
   basic-server-data:
 networks:

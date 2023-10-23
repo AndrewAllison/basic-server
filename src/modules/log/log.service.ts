@@ -1,11 +1,11 @@
 import { Injectable, Scope } from '@nestjs/common';
-import { PinoLogger } from 'nestjs-pino';
+import { Params, PinoLogger } from 'nestjs-pino';
 import { CorrelationService } from './correlation/correlation.service';
 
 @Injectable({ scope: Scope.REQUEST })
 export class LogService extends PinoLogger {
   constructor(
-    private readonly name: unknown,
+    private readonly name: Params,
     private readonly correlationService: CorrelationService,
   ) {
     super(name);

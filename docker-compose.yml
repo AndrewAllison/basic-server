@@ -1,13 +1,16 @@
 version: '3.7'
 services:
-  db:
-    image: "postgres"
-    ports:
-      - "5499:5432"
+  mysql-db:
+    image: mysql:8.0.33
+    restart: always
     env_file:
-      - .env.postgres # configure postgres
+      - .env.mysql
+    ports:
+      - '3307:3306'
+    expose:
+      - '3307'
     volumes:
-      - basic-server-data:/var/lib/postgresql/data/ # persist data even if container shuts down
+      - basic-server-db-data:/var/lib/mysql
     networks:
       - basic-server
   seq:
@@ -20,7 +23,7 @@ services:
       - '5341:5341' # handles ingestion http end-point
     image: 'datalust/seq:latest'
 volumes:
-  basic-server-data:
+  basic-server-db-data:
   seq:
 networks:
   basic-server:
