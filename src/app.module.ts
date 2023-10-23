@@ -6,9 +6,11 @@ import { CorrelationIdMiddleware } from './modules/log/correlation/correlation-i
 import { PrismaService } from './modules/db/prisma/prisma.service';
 import { UserService } from './users/user.service';
 import { UsersModule } from './users/users.module';
+import { HealthModule } from './modules/health/health.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [ConfigModule, LogModule, UsersModule],
+  imports: [ConfigModule, HttpModule, LogModule, UsersModule, HealthModule],
   controllers: [AppController],
   providers: [PrismaService, UserService],
 })
