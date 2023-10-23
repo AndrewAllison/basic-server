@@ -1,5 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
+import { LogService } from './modules/log/log.service';
+import { mockDeep } from 'jest-mock-extended';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -7,7 +9,12 @@ describe('AppController', () => {
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
-      providers: [],
+      providers: [
+        {
+          provide: LogService,
+          useValue: mockDeep<LogService>(),
+        },
+      ],
     }).compile();
 
     appController = app.get<AppController>(AppController);
