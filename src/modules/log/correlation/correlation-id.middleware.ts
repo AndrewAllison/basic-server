@@ -7,10 +7,12 @@ import { CORRELATION_ID_HEADER } from './constants';
 @Injectable()
 export class CorrelationIdMiddleware implements NestMiddleware {
   constructor(private readonly correlationService: CorrelationService) {}
-  use(req: Request, res: Response) {
-    const requestId = req.header[CORRELATION_ID_HEADER] || uuid();
+  use({ header, next }: Request, res: Response) {
+    const requestId = header[CORRELATION_ID_HEADER] || uuid();
     res.setHeader(CORRELATION_ID_HEADER, requestId);
     this.correlationService.setCorrelationId(requestId);
-    req.next();
+    if (next) {
+      next();
+    }
   }
 }
