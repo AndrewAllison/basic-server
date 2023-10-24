@@ -37,13 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
       - uses: ArtiomTr/jest-coverage-report-action@v2
         with:
-          coverage-file: ./coverage/coverage-final.json
-      - run: npm ci
-      - run: npm run build --if-present
-      - run: npm run test:unit:coverage
+          test-script: npm run test:unit:coverage
 
