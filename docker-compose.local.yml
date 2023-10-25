@@ -1,10 +1,8 @@
-version: '3'
+version: '3.7'
 services:
   basic-server-docker:
-    environment:
-      - NODE_ENV=development
-      - DATABASE_URL="12345"
-      - PORT=6060
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: Dockerfile
@@ -12,6 +10,32 @@ services:
       - ./:/usr/app
     container_name: basic-server
     expose:
-      - "6060"
+      - "6006"
     ports:
-      - "6060:6060"
+      - "6006:6006"
+  mysql-db:
+    image: mysql:8.0.33
+    restart: always
+    env_file:
+      - .env.mysql
+    ports:
+      - '3307:3306'
+    expose:
+      - '3307'
+    volumes:
+      - basic-server-db-data:/var/lib/mysql
+    networks:
+      - basic-server
+  seq:
+    image: 'datalust/seq:latest'
+    environment:
+      - ACCEPT_EULA=Y
+    volumes:
+      - seq:/data
+    ports:
+      - '8080:80' # exposes ui ports
+      - '5341:5341' # handles ingestion http end-point
+volumes:
+  basic-server-data:
+networks:
+  basic-server:
