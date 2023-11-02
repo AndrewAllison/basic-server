@@ -11,10 +11,12 @@ import { QueueModule } from './modules/queue/queue.module';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { ExpressAdapter } from '@bull-board/express';
 import { BullModule } from '@nestjs/bull';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
     ConfigModule,
+    EventEmitterModule.forRoot(),
     HttpModule,
     LogModule,
     UsersModule,
