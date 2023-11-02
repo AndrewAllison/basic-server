@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
 import { createStream } from 'pino-seq';
 import { LogConfig } from '../config/models/log.config';
-import { LogService } from './log.service';
+import { LogService, RequestLogService } from './log.service';
 import { CorrelationService } from './correlation/correlation.service';
 
 @Module({
@@ -30,7 +30,7 @@ import { CorrelationService } from './correlation/correlation.service';
       },
     }),
   ],
-  providers: [LogService, CorrelationService],
-  exports: [LogService, CorrelationService],
+  providers: [LogService, RequestLogService, CorrelationService],
+  exports: [LogService, RequestLogService, CorrelationService],
 })
 export class LogModule {}

@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { RealIP } from 'nestjs-real-ip';
 import { Public } from './modules/auth/models/public.constants';
-import { LogService } from './modules/log/log.service';
+import { RequestLogService } from './modules/log/log.service';
 import { ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 export class InfoResponse {
@@ -21,7 +21,7 @@ export class InfoResponse {
 @ApiTags('Server')
 @Controller()
 export class AppController {
-  constructor(private readonly logger: LogService) {}
+  constructor(private readonly logger: RequestLogService) {}
   @Public()
   @Get('')
   @ApiResponse({
