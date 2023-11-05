@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
-import { LogService } from './modules/log/log.service';
+import { RequestLogService } from './modules/log/log.service';
 import { mockDeep } from 'jest-mock-extended';
 
 describe('AppController', () => {
@@ -11,8 +11,8 @@ describe('AppController', () => {
       controllers: [AppController],
       providers: [
         {
-          provide: LogService,
-          useValue: mockDeep<LogService>(),
+          provide: RequestLogService,
+          useValue: mockDeep<RequestLogService>(),
         },
       ],
     }).compile();
