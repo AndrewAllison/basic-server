@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Version } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { UsersQueueKeys } from '../../users/constants';
 import { InjectQueue } from '@nestjs/bull';
@@ -11,7 +11,10 @@ export class QueueStatus {
   failed: number;
 }
 
-@Controller('queue')
+@Controller({
+  path: 'queue',
+  version: '1',
+})
 export class QueueController {
   private userQueue: Queue;
 
@@ -19,6 +22,7 @@ export class QueueController {
     this.userQueue = usersQueue;
   }
 
+  @Version('1.1')
   @Get('status')
   @ApiResponse({
     status: 200,

@@ -4,7 +4,7 @@ import { EnvConfig } from './modules/config/models/env.config';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from 'nestjs-pino';
 import helmet from 'helmet';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 let port;
@@ -34,6 +34,10 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
+  app.enableVersioning({
+    type: VersioningType.URI,
+  });
 
   await app.listen(port);
   appUrl = await app.getUrl();
