@@ -1,4 +1,4 @@
 export const UsersQueueKeys = {
   queue: 'users',
-  removeData: 'remove-data',
+  removeData: 'users:remove-data',
 };

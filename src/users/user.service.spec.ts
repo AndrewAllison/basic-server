@@ -30,6 +30,7 @@ describe('UserService', () => {
         { id: '1234', name: 'andu', email: 'mail@mail.com' },
       ]);
       service.users({ skip: 10 });
+      expect(prismaService.user.findMany).toHaveBeenCalledWith({ skip: 10 });
     });
   });
 });
