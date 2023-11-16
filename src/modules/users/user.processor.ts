@@ -8,8 +8,8 @@ import {
   Processor,
 } from '@nestjs/bull';
 import { Job } from 'bull';
-import { UsersQueueKeys } from './constants';
-import { LogService } from '../modules/log/log.service';
+import { UsersQueueKeys } from './models/constants';
+import { LogService } from '../log/log.service';
 
 @Processor({
   name: UsersQueueKeys.queue,

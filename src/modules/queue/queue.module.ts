@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { QueueController } from './queue.controller';
 import { BullModule } from '@nestjs/bull';
-import { UsersQueueKeys } from '../../users/constants';
+import { UsersQueueKeys } from '../users/models/constants';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 

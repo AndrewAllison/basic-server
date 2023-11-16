@@ -4,7 +4,7 @@ import { ConfigModule } from './modules/config/config.module';
 import { LogModule } from './modules/log/log.module';
 import { CorrelationIdMiddleware } from './modules/log/correlation/correlation-id.middleware';
 import { PrismaService } from './modules/db/prisma/prisma.service';
-import { UsersModule } from './users/users.module';
+import { UsersModule } from './modules/users/users.module';
 import { HealthModule } from './modules/health/health.module';
 import { HttpModule } from '@nestjs/axios';
 import { QueueModule } from './modules/queue/queue.module';
@@ -12,9 +12,11 @@ import { BullBoardModule } from '@bull-board/nestjs';
 import { ExpressAdapter } from '@bull-board/express';
 import { BullModule } from '@nestjs/bull';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
+    AuthModule,
     ConfigModule,
     EventEmitterModule.forRoot(),
     HttpModule,

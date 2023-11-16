@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { PrismaService } from '../modules/db/prisma/prisma.service';
+import { PrismaService } from '../db/prisma/prisma.service';
 import { IsEmail, IsNotEmpty } from 'class-validator';
 import { ApiTags } from '@nestjs/swagger';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { UsersQueueKeys } from './constants';
+import { UsersQueueKeys } from './models/constants';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 
 export class RegisterUser {

@@ -1,6 +1,6 @@
 import { Controller, Get, Version } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
-import { UsersQueueKeys } from '../../users/constants';
+import { UsersQueueKeys } from '../users/models/constants';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 

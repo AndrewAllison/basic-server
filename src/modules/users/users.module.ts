@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UsersController } from './users.controller';
-import { PrismaModule } from '../modules/db/prisma/prisma.module';
+import { PrismaModule } from '../db/prisma/prisma.module';
 import { UserProcessor } from './user.processor';
-import { LogModule } from '../modules/log/log.module';
-import { QueueModule } from '../modules/queue/queue.module';
+import { LogModule } from '../log/log.module';
+import { QueueModule } from '../queue/queue.module';
 
 @Module({
   imports: [PrismaModule, LogModule, QueueModule],
