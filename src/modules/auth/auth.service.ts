@@ -1,11 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PasswordService } from './password.service';
-import { SignInInput } from '../users/user.service';
+import { SignInInput, UserService } from '../users/user.service';
 import { PrismaService } from '../db/prisma/prisma.service';
 import { IdService } from './id.service';
 import { RegisterUserInput } from '../users/models/register-user.input';
 import { Account, User } from '@prisma/client';
 import { UserWithAccounts } from '../users/models/user-with-posts.model';
+import { JwtService } from '@nestjs/jwt';
+import { SignInPayload } from './models/signInPayload';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +15,8 @@ export class AuthService {
     private readonly passwordService: PasswordService,
     private readonly prisma: PrismaService,
     private readonly idService: IdService,
+    private readonly jwtService: JwtService,
+    private readonly userService: UserService,
   ) {}
 
   async register(registerUserInput: RegisterUserInput) {
@@ -46,9 +50,9 @@ export class AuthService {
     }
   }
 
-  async signIn(signInInput: SignInInput) {
+  async signIn(signInInput: SignInInput): Promise<SignInPayload> {
     const { email, password } = signInInput;
-    const existingUser = (await this.findUserByEmail(
+    const existingUser = (await this.userService.findUserByEmail(
       email,
     )) as UserWithAccounts;
 
@@ -63,15 +67,10 @@ export class AuthService {
         password,
         emailPasswordAccount.salt,
       );
-      return existingUser;
+      return { access_token: this.jwtService.sign(existingUser) };
     }
-  }
 
-  async findUserByEmail(email: string) {
-    return this.prisma.user.findUnique({
-      where: { email },
-      include: { accounts: true },
-    });
+    throw new UnauthorizedException('Could not Authorize user.');
   }
 
   validateUser(user: User | null) {

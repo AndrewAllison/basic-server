@@ -19,6 +19,13 @@ export class UserService {
     private readonly logger: RequestLogService,
   ) {}
 
+  async findUserByEmail(email: string) {
+    return this.prisma.user.findUnique({
+      where: { email },
+      include: { accounts: true },
+    });
+  }
+
   async users(params: {
     skip?: number;
     take?: number;
