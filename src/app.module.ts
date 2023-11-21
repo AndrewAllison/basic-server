@@ -13,6 +13,7 @@ import { ExpressAdapter } from '@bull-board/express';
 import { BullModule } from '@nestjs/bull';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AuthModule } from './modules/auth/auth.module';
+import { CommunicationsModule } from './modules/communications/communications.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { AuthModule } from './modules/auth/auth.module';
       route: '/queues',
       adapter: ExpressAdapter,
     }),
+    CommunicationsModule,
   ],
   controllers: [AppController],
   providers: [PrismaService],

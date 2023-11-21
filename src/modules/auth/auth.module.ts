@@ -10,16 +10,29 @@ import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { CommunicationsModule } from '../communications/communications.module';
+import { ConfigService } from '@nestjs/config';
+import { JwtConfig } from '../config/models/jwt.config';
 
 @Module({
   imports: [
+    CommunicationsModule,
     UsersModule,
     ConfigModule,
-    JwtModule.register({
-      global: true,
-      secret: '12345678',
-      signOptions: {
-        expiresIn: '60s',
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const jwtConfig = configService.get<JwtConfig>('jwt');
+        if (!jwtConfig) throw new Error('Configuration error: No JWT config.');
+        return {
+          secret: jwtConfig.secret,
+          signOptions: {
+            expiresIn: jwtConfig.expiresIn,
+            issuer: jwtConfig.issuer,
+            audience: jwtConfig.audience,
+          },
+        };
       },
     }),
     PrismaModule,

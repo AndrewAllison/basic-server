@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterUserInput } from '../users/models/register-user.input';
-import { SignInInput } from '../users/user.service';
+import { SignInInput, VerifyEmailInput } from '../users/user.service';
 import { Public } from './models/public.decorator';
 
 @Controller('auth')
@@ -26,6 +26,19 @@ export class AuthController {
   async signIn(@Body() signInInput: SignInInput) {
     try {
       return this.authService.signIn(signInInput);
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        return { message: 'Authentication failed', error: error.message };
+      }
+      throw error;
+    }
+  }
+
+  @Public()
+  @Post('verify-email')
+  async verifyEmail(@Body() verifyEmailInput: VerifyEmailInput) {
+    try {
+      return this.authService.verifyEmail(verifyEmailInput.token);
     } catch (error) {
       if (error instanceof UnauthorizedException) {
         return { message: 'Authentication failed', error: error.message };

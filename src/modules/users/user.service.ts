@@ -4,6 +4,11 @@ import { Prisma, User } from '@prisma/client';
 import { RequestLogService } from '../log/log.service';
 import { IsEmail, IsString } from 'class-validator';
 
+export class VerifyEmailInput {
+  @IsString()
+  token: string;
+}
+
 export class SignInInput {
   @IsEmail()
   email: string;
