@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { PrismaService } from '../db/prisma/prisma.service';
 import { IsEmail, IsNotEmpty } from 'class-validator';
 import { ApiTags } from '@nestjs/swagger';
@@ -70,5 +70,20 @@ export class UsersController {
       console.error(e);
       return { error: e };
     }
+  }
+
+  @Delete(':userId')
+  async deleteUser(@Param() deleteUser: RemoveUserDataParams) {
+    const { userId } = deleteUser;
+    await this.prisma.user.delete({
+      where: {
+        id: userId,
+      },
+    });
+
+    return {
+      status: 'success',
+      message: 'User deleted',
+    };
   }
 }

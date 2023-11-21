@@ -86,7 +86,8 @@ export class AuthService {
         password,
         emailPasswordAccount.salt,
       );
-      return { access_token: this.jwtService.sign(existingUser) };
+      const { id, email, name } = existingUser;
+      return { access_token: this.jwtService.sign({ sub: id, email, name }) };
     }
 
     throw new UnauthorizedException('Could not Authorize user.');
