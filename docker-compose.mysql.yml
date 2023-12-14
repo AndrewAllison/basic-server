@@ -1,0 +1,17 @@
+version: '3.7'
+services:
+  mysql-db:
+    image: mysql:8.0.33
+    restart: always
+    env_file:
+      - .env.mysql
+    ports:
+      - '3308:3306' # Use the first value to expose the port you want to connect to. The 3308 is to avoid conflict with an existing install
+    volumes:
+      - mysql-db-data:/var/lib/mysql
+    networks:
+      - mysql-server
+volumes:
+  mysql-db-data:
+networks:
+  mysql-server:

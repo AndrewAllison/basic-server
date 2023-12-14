@@ -2,13 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { PasswordService } from './password.service';
 import { mockDeep } from 'jest-mock-extended';
-import { PrismaService } from '../db/prisma/prisma.service';
+import { PrismaService } from '../../db/prisma/prisma.service';
 import { faker } from '@faker-js/faker';
 import { IdService } from './id.service';
 import { UnauthorizedException } from '@nestjs/common';
-import { SignInInput, UserService } from '../users/user.service';
+import { SignInInput, UserService } from '../../users/user.service';
 import { Account } from '@prisma/client';
-import { UserWithAccounts } from '../users/models/user-with-posts.model';
+import { UserWithAccounts } from '../../users/models/user-with-posts.model';
 import { JwtService } from '@nestjs/jwt';
 
 const firstName = faker.person.firstName();

@@ -27,7 +27,7 @@ export default () => ({
     host: process.env.REDIS_HOST,
     username: process.env.REDIS_USERNAME ?? undefined,
     password: process.env.REDIS_PASSWORD,
-    port: parseInt(`${process.env.REDIS_POST || 6357}`, 10),
+    port: parseInt(`${process.env.REDIS_PORT || 6357}`, 10),
   },
   jwt: {
     secret: process.env.JWT_SECRET,

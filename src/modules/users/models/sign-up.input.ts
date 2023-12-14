@@ -2,7 +2,7 @@ import { IsEmail, IsString } from 'class-validator';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Auth')
-export class RegisterUserInput {
+export class SignUpInput {
   @IsEmail()
   email: string;
 

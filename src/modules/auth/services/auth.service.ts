@@ -8,13 +8,13 @@ import { Account, User } from '@prisma/client';
 import * as crypto from 'crypto';
 
 import { PasswordService } from './password.service';
-import { SignInInput, UserService } from '../users/user.service';
-import { PrismaService } from '../db/prisma/prisma.service';
+import { SignInInput, UserService } from '../../users/user.service';
+import { PrismaService } from '../../db/prisma/prisma.service';
 import { IdService } from './id.service';
-import { RegisterUserInput } from '../users/models/register-user.input';
-import { UserWithAccounts } from '../users/models/user-with-posts.model';
-import { SignInPayload } from './models/signInPayload';
-import { EmailService } from '../communications/email.service';
+import { SignUpInput } from '../../users/models/sign-up.input';
+import { UserWithAccounts } from '../../users/models/user-with-posts.model';
+import { EmailService } from '../../communications/email.service';
+import { TokenService } from './token.service';
 
 @Injectable()
 export class AuthService {
@@ -25,12 +25,14 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
     private readonly emailService: EmailService,
+    private readonly tokenService: TokenService,
   ) {}
 
-  async register(registerUserInput: RegisterUserInput) {
+  async register(registerUserInput: SignUpInput) {
     try {
       const { password, name, email } = registerUserInput;
       const userId = this.idService.createdId();
+
       const { salt, hash } = await this.passwordService.encrypt(password);
       const verifyToken = crypto.randomBytes(20).toString('hex');
       const verifyTokenExpires = new Date();
@@ -69,7 +71,9 @@ export class AuthService {
     }
   }
 
-  async signIn(signInInput: SignInInput): Promise<SignInPayload> {
+  async signIn(
+    signInInput: SignInInput,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     const { email, password } = signInInput;
     const existingUser = (await this.userService.findUserByEmail(
       email,
@@ -86,8 +90,20 @@ export class AuthService {
         password,
         emailPasswordAccount.salt,
       );
-      const { id, email, name } = existingUser;
-      return { access_token: this.jwtService.sign({ sub: id, email, name }) };
+
+      const { accessToken } = await this.tokenService.generateAccessToken({
+        sub: existingUser.id,
+        ...existingUser,
+      });
+      const { refreshToken } = await this.tokenService.generateRefreshToken({
+        sub: existingUser.id,
+        ...existingUser,
+      });
+
+      return {
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      };
     }
 
     throw new UnauthorizedException('Could not Authorize user.');
@@ -127,6 +143,40 @@ export class AuthService {
       result: 'success',
       message: 'Email verified successfully.',
     };
+  }
+
+  async validateRefreshToken(userId: string, refreshToken: string) {
+    const isTokenValid = await this.tokenService.validateRefreshToken(
+      userId,
+      refreshToken,
+    );
+
+    if (!isTokenValid) {
+      throw new UnauthorizedException('Invalid refresh token.');
+    }
+
+    const existingUser = (await this.userService.findUserById(
+      userId,
+    )) as UserWithAccounts;
+
+    const { accessToken } = await this.tokenService.generateAccessToken({
+      sub: existingUser.id,
+      ...existingUser,
+    });
+    const { refreshToken: newRefreshToken } =
+      await this.tokenService.generateRefreshToken({
+        sub: existingUser.id,
+        ...existingUser,
+      });
+
+    return {
+      accessToken: accessToken,
+      refreshToken: newRefreshToken,
+    };
+  }
+
+  async invalidateRefreshToken(userId: string) {
+    await this.tokenService.invalidateRefreshToken(userId);
   }
 
   validateUser(user: User | null) {

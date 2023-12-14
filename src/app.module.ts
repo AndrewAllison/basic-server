@@ -3,7 +3,6 @@ import { AppController } from './app.controller';
 import { ConfigModule } from './modules/config/config.module';
 import { LogModule } from './modules/log/log.module';
 import { CorrelationIdMiddleware } from './modules/log/correlation/correlation-id.middleware';
-import { PrismaService } from './modules/db/prisma/prisma.service';
 import { UsersModule } from './modules/users/users.module';
 import { HealthModule } from './modules/health/health.module';
 import { HttpModule } from '@nestjs/axios';
@@ -14,6 +13,7 @@ import { BullModule } from '@nestjs/bull';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AuthModule } from './modules/auth/auth.module';
 import { CommunicationsModule } from './modules/communications/communications.module';
+import { SessionParamsMiddleware } from './modules/auth/guards/session-params.middleware';
 
 @Module({
   imports: [
@@ -60,10 +60,10 @@ import { CommunicationsModule } from './modules/communications/communications.mo
     CommunicationsModule,
   ],
   controllers: [AppController],
-  providers: [PrismaService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(CorrelationIdMiddleware).forRoutes('*');
+    consumer.apply(SessionParamsMiddleware).forRoutes('*');
   }
 }

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
+import { AuthController } from './controllers/auth.controller';
+import { AuthService } from './services/auth.service';
 import { UsersModule } from '../users/users.module';
 import { ConfigModule } from '../config/config.module';
-import { PasswordService } from './password.service';
-import { IdService } from './id.service';
+import { PasswordService } from './services/password.service';
+import { IdService } from './services/id.service';
 import { PrismaModule } from '../db/prisma/prisma.module';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
@@ -13,12 +13,18 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CommunicationsModule } from '../communications/communications.module';
 import { ConfigService } from '@nestjs/config';
 import { JwtConfig } from '../config/models/jwt.config';
+import { GithubStrategy } from './providers/github/github.strategy';
+import { HttpModule } from '@nestjs/axios';
+import { PassportModule } from '@nestjs/passport';
+import { ProfileController } from './controllers/profile.controller';
+import { TokenService } from './services/token.service';
+import { RedisModule } from '../db/redis/redis.module';
 
 @Module({
   imports: [
     CommunicationsModule,
-    UsersModule,
     ConfigModule,
+    HttpModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -35,14 +41,20 @@ import { JwtConfig } from '../config/models/jwt.config';
         };
       },
     }),
+    PassportModule.register({ session: true }),
     PrismaModule,
+    RedisModule,
+    UsersModule,
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, ProfileController],
   providers: [
     AuthService,
-    PasswordService,
+    GithubStrategy,
     IdService,
     JwtStrategy,
+    PasswordService,
+    RedisModule,
+    TokenService,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,

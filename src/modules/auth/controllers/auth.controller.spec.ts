@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { RegisterUserInput } from '../users/models/register-user.input';
-import { SignInInput } from '../users/user.service';
+import { AuthService } from '../services/auth.service';
+import { SignUpInput } from '../../users/models/sign-up.input';
+import { SignInInput } from '../../users/user.service';
 import { UnauthorizedException } from '@nestjs/common';
 import { mockDeep } from 'jest-mock-extended';
 import { faker } from '@faker-js/faker';
-import { UserWithAccounts } from '../users/models/user-with-posts.model';
+import { UserWithAccounts } from '../../users/models/user-with-posts.model';
 
 describe('AuthController', () => {
   let authController: AuthController;
@@ -30,14 +30,14 @@ describe('AuthController', () => {
   describe('register', () => {
     it('should call authService.register with the provided input', async () => {
       // Arrange
-      const registerUserInput: RegisterUserInput = {
+      const registerUserInput: SignUpInput = {
         name: faker.person.fullName(),
         email: faker.internet.email(),
         password: faker.internet.password(),
       };
 
       // Act
-      await authController.register(registerUserInput);
+      await authController.signUp(registerUserInput);
 
       // Assert
       expect(authService.register).toHaveBeenCalledWith(registerUserInput);

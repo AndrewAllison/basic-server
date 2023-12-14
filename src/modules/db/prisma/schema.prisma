@@ -31,6 +31,7 @@ model Account {
   provider          String
   providerAccountId String
   token             String
+  refreshToken      String?
   salt              String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
