@@ -4,6 +4,7 @@ import {
   Get,
   Post,
   Req,
+  Request,
   Res,
   UnauthorizedException,
   UseGuards,
@@ -132,6 +133,38 @@ export class AuthController {
     }
   }
 
+  @Post('resend-verify-email')
+  async resendVerifyEmail(@Request() req) {
+    try {
+      const { id } = req.user;
+      return this.authService.resendVerifyEmail(id);
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        return { message: 'Authentication failed', error: error.message };
+      }
+      throw error;
+    }
+  }
+
+  @Public()
+  @Post('forgot-password')
+  async forgotPassword(@Body() body) {
+    const { email } = body;
+    await this.authService.forgotPassword(email);
+
+    return {
+      success: true,
+      message: 'Forgotten password email has been sent.',
+    };
+  }
+
+  @Public()
+  @Post('reset-password')
+  async resetPassword(@Body() body) {
+    const { token, newPassword } = body;
+    return this.authService.resetPassword(token, newPassword);
+  }
+
   @Public()
   @Get('github')
   @UseGuards(AuthGuard('github'))
@@ -146,7 +179,7 @@ export class AuthController {
       req.session.redirectUrl && 'https://localhost:3000/dashboard';
     req.session.redirectUrl = null;
     res.cookie(ACCESS_TOKEN_KEY, req.user.accessToken, { httpOnly: true });
-    res.cookie(REFRESH_TOKEN_KEY, req.user.accessToken, { httpOnly: true });
+    res.cookie(REFRESH_TOKEN_KEY, req.user.refreshToken, { httpOnly: true });
 
     return res.redirect(redirectUrl);
   }

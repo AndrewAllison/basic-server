@@ -19,7 +19,8 @@ model User {
   verifyToken        String?
   verifyTokenExpires DateTime?
 
-  accounts Account[]
+  accounts      Account[]
+  PasswordReset PasswordReset[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -40,4 +41,14 @@ model Account {
   updatedAt DateTime @updatedAt
 
   @@unique([provider, providerAccountId])
+}
+
+model PasswordReset {
+  token String @unique
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }

@@ -3,7 +3,6 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { Account, User } from '@prisma/client';
 import * as crypto from 'crypto';
 
@@ -22,11 +21,26 @@ export class AuthService {
     private readonly passwordService: PasswordService,
     private readonly prisma: PrismaService,
     private readonly idService: IdService,
-    private readonly jwtService: JwtService,
     private readonly userService: UserService,
     private readonly emailService: EmailService,
     private readonly tokenService: TokenService,
   ) {}
+
+  generateToken() {
+    const verifyToken = crypto.randomBytes(20).toString('hex');
+    const verifyTokenHash = crypto
+      .createHash('sha256')
+      .update(verifyToken)
+      .digest('hex');
+
+    return { verifyToken, verifyTokenHash };
+  }
+
+  generateExpiryDate(hours = 1) {
+    const verifyTokenExpires = new Date();
+    verifyTokenExpires.setHours(verifyTokenExpires.getHours() + hours);
+    return verifyTokenExpires;
+  }
 
   async register(registerUserInput: SignUpInput) {
     try {
@@ -34,13 +48,9 @@ export class AuthService {
       const userId = this.idService.createdId();
 
       const { salt, hash } = await this.passwordService.encrypt(password);
-      const verifyToken = crypto.randomBytes(20).toString('hex');
-      const verifyTokenExpires = new Date();
-      verifyTokenExpires.setHours(verifyTokenExpires.getHours() + 1); // Set expiration to 1 hour
-      const verifyTokenHash = crypto
-        .createHash('sha256')
-        .update(verifyToken)
-        .digest('hex');
+
+      const verifyTokenExpires = this.generateExpiryDate();
+      const { verifyToken, verifyTokenHash } = this.generateToken();
 
       const user = await this.prisma.user.create({
         data: {
@@ -180,7 +190,7 @@ export class AuthService {
   }
 
   validateUser(user: User | null) {
-    if (!user || !user.verified) {
+    if (!user) {
       throw new UnauthorizedException('Invalid username or password.');
     }
   }
@@ -201,5 +211,94 @@ export class AuthService {
     if (!account.token || !account.salt) {
       throw new UnauthorizedException('Invalid username or password.');
     }
+  }
+
+  async resendVerifyEmail(id: string) {
+    const existingUser = await this.userService.findUserById(id);
+
+    if (!existingUser) {
+      throw new UnauthorizedException();
+    }
+
+    const verifyTokenExpires = this.generateExpiryDate();
+    const { verifyToken, verifyTokenHash } = this.generateToken();
+
+    const user = await this.prisma.user.update({
+      data: {
+        verified: false,
+        verifyToken: verifyTokenHash,
+        verifyTokenExpires,
+      },
+      where: {
+        id,
+      },
+    });
+
+    await this.emailService.sendVerificationEmail(user.email, verifyToken);
+
+    return {
+      success: true,
+      message: 'Success',
+    };
+  }
+
+  async forgotPassword(email: any) {
+    const verifyTokenExpires = this.generateExpiryDate();
+    const { verifyToken, verifyTokenHash } = this.generateToken();
+
+    const existingUser = await this.userService.findUserByEmail(email);
+
+    if (!existingUser) {
+      console.log('User does not exist');
+      return null;
+    }
+
+    // We will clear all other resets just incase.
+    await this.prisma.passwordReset.deleteMany({
+      where: {
+        userId: existingUser.id,
+      },
+    });
+
+    await this.prisma.passwordReset.create({
+      data: {
+        token: verifyTokenHash,
+        userId: existingUser.id,
+        expiresAt: verifyTokenExpires,
+      },
+    });
+
+    await this.emailService.sendPasswordResetEmail(email, verifyToken);
+  }
+
+  async resetPassword(token: any, newPassword: any) {
+    const verifyTokenHash = crypto
+      .createHash('sha256')
+      .update(token)
+      .digest('hex');
+
+    const tokenRecod = await this.prisma.passwordReset.findFirst({
+      where: {
+        token: verifyTokenHash,
+      },
+    });
+
+    if (!tokenRecod) throw new UnauthorizedException('Not a valid token.');
+
+    const { salt, hash } = await this.passwordService.encrypt(newPassword);
+
+    await this.prisma.account.update({
+      data: {
+        token: hash,
+        salt: salt.toString('hex'),
+      },
+      where: {
+        provider_providerAccountId: {
+          providerAccountId: tokenRecod.userId,
+          provider: 'email-password',
+        },
+      },
+    });
+    return true;
   }
 }

@@ -53,7 +53,7 @@ async function bootstrap() {
   app.use(
     session({
       store: new RedisStore({ client: redisClient }),
-      secret: configService.get('SESSION_SECRET'), // Replace with a secure secret key
+      secret: `${configService.get('SESSION_SECRET')}`, // Replace with a secure secret key
       resave: false,
       saveUninitialized: true,
       cookie: {
