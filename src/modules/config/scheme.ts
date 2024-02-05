@@ -24,6 +24,9 @@ const validationScheme = Joi.object({
   EMAIL_SERVER_PASSWORD: Joi.string().required(),
   EMAIL_FROM: Joi.string().required(),
   EMAIL_FROM_NAME: Joi.string().required(),
+  AWS_REGION: Joi.string().required(),
+  AWS_COGNITO_CLIENT_ID: Joi.string().required(),
+  AWS_COGNITO_USER_POOL_ID: Joi.string().required(),
 });
 
 export default validationScheme;

@@ -14,6 +14,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AuthModule } from './modules/auth/auth.module';
 import { CommunicationsModule } from './modules/communications/communications.module';
 import { SessionParamsMiddleware } from './modules/auth/guards/session-params.middleware';
+import { CognitoService } from './modules/auth/services/cognito.service';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { SessionParamsMiddleware } from './modules/auth/guards/session-params.mi
     CommunicationsModule,
   ],
   controllers: [AppController],
+  providers: [CognitoService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

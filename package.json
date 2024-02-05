@@ -26,6 +26,7 @@
     "full:test": "npm run test:unit:coverage && npm run test:integration && npm run test:e2e && npm run test:feature"
   },
   "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.490.0",
     "@bull-board/api": "^5.9.1",
     "@bull-board/express": "^5.9.1",
     "@bull-board/nestjs": "^5.9.1",
@@ -58,6 +59,8 @@
     "helmet": "^7.0.0",
     "ioredis": "^5.3.2",
     "joi": "17.11.0",
+    "jsdom": "^24.0.0",
+    "jwks-rsa": "^3.1.0",
     "nestjs-pino": "3.5.0",
     "nestjs-real-ip": "3.0.1",
     "nodemailer": "^6.9.7",

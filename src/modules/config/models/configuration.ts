@@ -1,6 +1,11 @@
 import * as process from 'process';
 
 export default () => ({
+  aws: {
+    region: process.env.AWS_REGION,
+    cognitoClientId: process.env.AWS_COGNITO_CLIENT_ID,
+    cognitoUserPoolId: process.env.AWS_COGNITO_USER_POOL_ID,
+  },
   database: {
     url: process.env.DATABASE_URL,
   },

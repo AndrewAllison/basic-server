@@ -19,6 +19,8 @@ import { PassportModule } from '@nestjs/passport';
 import { ProfileController } from './controllers/profile.controller';
 import { TokenService } from './services/token.service';
 import { RedisModule } from '../db/redis/redis.module';
+import { CognitoService } from './services/cognito.service';
+import { CognitoController } from './controllers/cognito.controller';
 
 @Module({
   imports: [
@@ -46,9 +48,10 @@ import { RedisModule } from '../db/redis/redis.module';
     RedisModule,
     UsersModule,
   ],
-  controllers: [AuthController, ProfileController],
+  controllers: [AuthController, ProfileController, CognitoController],
   providers: [
     AuthService,
+    CognitoService,
     GithubStrategy,
     IdService,
     JwtStrategy,
