@@ -10,9 +10,9 @@ services:
       - ./:/usr/app
     container_name: basic-server
     expose:
-      - "6006"
+      - "6008"
     ports:
-      - "6006:6006"
+      - "6008:6006"
   mysql-db:
     image: mysql:8.0.33
     restart: always
@@ -27,7 +27,6 @@ services:
     networks:
       - basic-server
   seq:
-    image: 'datalust/seq:latest'
     environment:
       - ACCEPT_EULA=Y
     volumes:
@@ -35,7 +34,23 @@ services:
     ports:
       - '8080:80' # exposes ui ports
       - '5341:5341' # handles ingestion http end-point
+    image: 'datalust/seq:latest'
+  cache:
+    image: redis:7.2.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    volumes:
+      - cache:/data
 volumes:
   basic-server-data:
+  basic-server-db-data:
+  seq:
+  cache:
+    driver: local
 networks:
   basic-server:
+  cache:
+    driver: local
+

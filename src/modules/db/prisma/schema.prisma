@@ -14,4 +14,41 @@ model User {
   id    String  @id @default(cuid())
   email String  @unique
   name  String?
+
+  verified           Boolean   @default(false)
+  verifyToken        String?
+  verifyTokenExpires DateTime?
+
+  accounts      Account[]
+  PasswordReset PasswordReset[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  provider          String
+  providerAccountId String
+  token             String
+  refreshToken      String?
+  salt              String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([provider, providerAccountId])
+}
+
+model PasswordReset {
+  token String @unique
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }

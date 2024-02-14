@@ -2,7 +2,7 @@
 # BUILD FOR LOCAL DEVELOPMENT
 ###################
 
-FROM node:18-alpine As development
+FROM node:20-alpine As development
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -15,6 +15,11 @@ COPY --chown=node:node package*.json ./
 # Install app dependencies using the `npm ci` command instead of `npm install`
 RUN npm ci
 
+COPY src/modules/db/prisma/schema.prisma dist/modules/db/prisma/schema.prisma
+
+# Generate Prisma client
+RUN npx prisma generate --schema=dist/modules/db/prisma/schema.prisma
+
 # Bundle app source
 COPY --chown=node:node . .
 
@@ -25,7 +30,7 @@ USER node
 # BUILD FOR PRODUCTION
 ###################
 
-FROM node:18-alpine As build
+FROM node:20-alpine As build
 
 WORKDIR /usr/src/app
 
@@ -45,13 +50,18 @@ ENV NODE_ENV production
 # Running `npm ci` removes the existing node_modules directory and passing in --only=production ensures that only the production dependencies are installed. This ensures that the node_modules directory is as optimized as possible
 RUN npm ci --only=production && npm cache clean --force
 
+COPY src/modules/db/prisma/schema.prisma dist/modules/db/prisma/schema.prisma
+
+# Generate Prisma client
+RUN npx prisma generate --schema=dist/modules/db/prisma/schema.prisma
+
 USER node
 
 ###################
 # PRODUCTION
 ###################
 
-FROM node:18-alpine As production
+FROM node:20-alpine As production
 
 # Copy the bundled code from the build stage to the production image
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules

@@ -1,13 +1,25 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
-import { createStream } from 'pino-seq';
-import { LogConfig } from '../config/models/log.config';
-import { LogService } from './log.service';
+import { LogService, RequestLogService } from './log.service';
 import { CorrelationService } from './correlation/correlation.service';
+import { ConfigModule } from '../config/config.module';
+import { ConfigService } from '@nestjs/config';
+import { LogConfig } from '../config/models/log.config';
+import { createStream } from 'pino-seq';
 
 @Module({
   imports: [
+    // LoggerModule.forRoot({
+    //   pinoHttp: {
+    //     transport: {
+    //       target: 'pino/file',
+    //       options: { destination: './logs/logs.log', mkdir: true },
+    //     },
+    //   },
+    // }),
+    // TODO: SEQ - This is a cool way of logging
+    //  with SEQ but as it's a pain getting a
+    //  SEQ box up and running I've let it
     LoggerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -19,6 +31,9 @@ import { CorrelationService } from './correlation/correlation.service';
           logOtherAs: 'Verbose',
         });
         return {
+          // pinoHttp: {
+          //   transport: 'pino-pretty',
+          // },
           pinoHttp: [
             {
               level: logConfig?.level,
@@ -30,7 +45,7 @@ import { CorrelationService } from './correlation/correlation.service';
       },
     }),
   ],
-  providers: [LogService, CorrelationService],
-  exports: [LogService, CorrelationService],
+  providers: [LogService, RequestLogService, CorrelationService],
+  exports: [LogService, RequestLogService, CorrelationService],
 })
 export class LogModule {}
