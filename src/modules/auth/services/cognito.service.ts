@@ -3,6 +3,7 @@ import {
   AdminInitiateAuthCommand,
   AdminInitiateAuthCommandInput,
   AdminInitiateAuthCommandOutput,
+  AdminSetUserPasswordCommand,
   AttributeType,
   CognitoIdentityProviderClient,
   GetUserCommand,
@@ -44,7 +45,7 @@ export class CognitoService {
     email: string,
   ): Promise<void> {
     const signUpParams: SignUpCommandInput = {
-      ClientId: this.config.cognitoClientId, // replace with your Cognito App client ID
+      ClientId: this.config.cognitoClientId,
       Username: username,
       Password: password,
       UserAttributes: [
@@ -83,6 +84,10 @@ export class CognitoService {
     const command = new AdminInitiateAuthCommand(signInParams);
     try {
       const response = await this.cognitoClient.send(command);
+      console.log(response);
+      if (!response.AuthenticationResult?.AccessToken) {
+        return null;
+      }
 
       const userCommand = new GetUserCommand({
         AccessToken: response.AuthenticationResult?.AccessToken,
@@ -98,6 +103,22 @@ export class CognitoService {
     } catch (error) {
       console.error('Error in SignIn', error);
       return null;
+    }
+  }
+
+  async resetPassword(username: string, password: string): Promise<any> {
+    const command = new AdminSetUserPasswordCommand({
+      UserPoolId: this.config.cognitoUserPoolId,
+      Username: username, // The username of the user
+      Password: password, // The new password
+      Permanent: true, // Set to true if the password should be permanent
+    });
+
+    try {
+      const response = await this.cognitoClient.send(command);
+      console.log('Password updated successfully', response);
+    } catch (error) {
+      console.error('Error updating password', error);
     }
   }
 }
