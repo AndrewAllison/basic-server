@@ -46,7 +46,7 @@
     "nestjs-real-ip": "3.0.1",
     "pino-http": "^8.5.0",
     "pino-seq": "^1.0.0",
-    "reflect-metadata": "0.1.13",
+    "reflect-metadata": "0.2.1",
     "rxjs": "7.8.1",
     "uuid": "^9.0.1"
   },
